@@ -1,20 +1,18 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+from app.views.utils import autenticar_usuario
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("feed")
+        return redirect('feed')
 
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+    if request.method == 'POST':
+        sucesso, form = autenticar_usuario(request)
 
-        user = authenticate(request, username=username, password=password)
+        if sucesso:
+            return redirect('feed')
 
-        if user is not None:
-            login(request, user)
-            return redirect("feed")
-        else:
-            return render(request, "index.html", {"error": "Usuário ou senha inválidos."})
+    else:
+        form = AuthenticationForm()
 
-    return render(request, "index.html")
+    return render(request, 'index.html', {'form': form})
