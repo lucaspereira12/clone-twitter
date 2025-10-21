@@ -3,5 +3,8 @@ from django.shortcuts import redirect
 
 @login_required
 def excluir_conta_view(request):
-    request.user.delete()
-    return redirect("home")
+    if request.method == "POST":
+        request.user.delete()
+        request.session.flush()
+        return redirect("home")
+    return redirect("perfil")

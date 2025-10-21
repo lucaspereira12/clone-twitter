@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil de {{ usuario_perfil.username }}{% endblock %}
+
+{% block content %}
+  <h1>Perfil de {{ usuario_perfil.username }}</h1>
+
+  <!-- Botão seguir / deixar de seguir -->
+  {% if usuario_perfil != request.user %}
+    {% if seguindo_usuario_logado %}
+      <form action="{% url 'deixar_de_seguir_usuario' usuario_perfil.id %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Deixar de Seguir</button>
+      </form>
+    {% else %}
+      <form action="{% url 'seguir_usuario' usuario_perfil.id %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Seguir</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <h2>Postagens</h2>
+  {% if postagens %}
+    <ul>
+      {% for post in postagens %}
+        <li>
+          {{ post.conteudo }} <br/>
+          <small>Criado em {{ post.data_criacao|date:"d/m/Y H:i" }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Este usuário ainda não fez postagens.</p>
+  {% endif %}
+
+  <h2>Seguidores ({{ seguidores.count }})</h2>
+  <ul>
+    {% for rel in seguidores %}
+      <li><a href="{% url 'perfil' rel.seguidor.username %}">{{ rel.seguidor.username }}</a></li>
+    {% empty %}
+      <li>Sem seguidores ainda.</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Seguindo ({{ seguindo.count }})</h2>
+  <ul>
+    {% for rel in seguindo %}
+      <li><a href="{% url 'perfil' rel.seguindo.username %}">{{ rel.seguindo.username }}</a></li>
+    {% empty %}
+      <li>Não está seguindo ninguém ainda.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

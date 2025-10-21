@@ -26,8 +26,19 @@
 
       </form>
 
-      {% if error %}
-        <p style="color:red;">{{ error }}</p>
+      {% if form.errors %}
+        {% for field in form %}
+          {% for error in field.errors %}
+            <p style="color:red;">{{ error }}</p>
+
+          {% endfor %}
+
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+          <p style="color:red;">{{ error }}</p>
+
+        {% endfor %}
 
       {% endif %}
 
