@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+import os
 
 # Create your models here.
 
@@ -41,3 +45,16 @@ class Relacionamento(models.Model):
 
     def __str__(self):
         return f'{self.seguidor} segue {self.seguindo}'
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    imagem = models.ImageField(upload_to='perfil_imagens/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
+# Criar automaticamente o perfil quando o usuário for criado
+@receiver(post_save, sender=User)
+def criar_profile_usuario(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
