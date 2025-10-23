@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+  <h1>Editar Perfil</h1>
+
+  {% if messages %}
+    <ul class="mensagens">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h2>Informações Pessoais</h2>
+    {{ usuario_form.first_name.errors }}
+    {{ usuario_form.first_name.label_tag }} {{ usuario_form.first_name }}
+
+    {{ usuario_form.last_name.errors }}
+    {{ usuario_form.last_name.label_tag }} {{ usuario_form.last_name }}
+
+    {{ usuario_form.email.errors }}
+    {{ usuario_form.email.label_tag }} {{ usuario_form.email }}
+
+    <h2>Imagem de Perfil</h2>
+    {% if request.user.profile.imagem %}
+      <div style="margin-bottom:10px;">
+        <img src="{{ request.user.profile.imagem.url }}" alt="Imagem atual"
+             width="150" style="border-radius:50%;border:2px solid #ddd;">
+      </div>
+    {% endif %}
+    {{ usuario_form.imagem.errors }}
+    {{ usuario_form.imagem }}
+
+    <br><br>
+    <button type="submit">Salvar Alterações</button>
+  </form>
+
+  <hr>
+
+  <h2>Alterar Senha</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ senha_form.as_p }}
+    <button type="submit">Atualizar Senha</button>
+  </form>
+
+{% endblock %}

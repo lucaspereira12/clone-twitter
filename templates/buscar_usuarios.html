@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Usuários</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/feed.css' %}">
+</head>
+<body>
+    <h1>Buscar Usuários</h1>
+
+    <form method="get" action="{% url 'buscar_usuarios' %}">
+        <input type="text" name="q" placeholder="Digite um nome ou @username" value="{{ termo }}">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <hr>
+
+    {% if usuarios %}
+        <ul>
+            {% for usuario in usuarios %}
+                <li>
+                    <a href="{% url 'perfil' username=usuario.username %}">
+                        @{{ usuario.username }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum usuário encontrado.</p>
+    {% endif %}
+
+    <a href="{% url 'feed' %}">Voltar ao feed</a>
+</body>
+</html>

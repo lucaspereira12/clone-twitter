@@ -5,6 +5,10 @@
 {% block content %}
   <h1>Perfil de {{ usuario_perfil.username }}</h1>
 
+  {% if usuario_perfil.profile.imagem %}
+    <img src="{{ usuario_perfil.profile.imagem.url }}" alt="Imagem de perfil" width="150">
+  {% endif %}
+
   <!-- Botão seguir / deixar de seguir -->
   {% if usuario_perfil != request.user %}
     {% if seguindo_usuario_logado %}
