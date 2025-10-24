@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post, Comentario, Profile
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.exceptions import ValidationError
 
 # =======================
 # Formulário de Postagem
@@ -62,18 +63,22 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ['username', 'password1', 'password2']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
 
-        self.fields['username'].widget.attrs.update({
-            'placeholder': 'Nome de usuário'
-        })
-        self.fields['password1'].widget.attrs.update({
-            'placeholder': 'Senha'
-        })
-        self.fields['password2'].widget.attrs.update({
-            'placeholder': 'Confirmar senha'
-        })
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Este nome de usuário já está em uso.")
+
+        return username
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("As senhas não coincidem.")
+
+        return password2
 
 # =============================================
 # Formulário unificado para edição de perfil

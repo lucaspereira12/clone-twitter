@@ -1,128 +1,95 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitter – Feed</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+{% block title %}Twitter – Feed{% endblock %}
 
-    <link rel="icon" href="{% static 'img/twitter.png' %}" type="image/png">
-    <link rel="stylesheet" href="{% static 'css/feed.css' %}">
+{% block extra_css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="{% static 'img/twitter.png' %}" type="image/png">
+  <link rel="stylesheet" href="{% static 'css/feed.css' %}">
+{% endblock %}
 
-  </head>
+{% block content %}
+<div class="container">
 
-  <body>
-    <header>Twitter Clone</header>
+  <h1>Bem-vindo, {{ username }}!</h1>
 
-    <div class="container">
+  <!-- Formulário de nova postagem -->
+  <form method="POST" class="post-form" action="{% url 'postar' %}">
+    {% csrf_token %}
+    {{ form.conteudo }}
 
-      <h1>Bem-vindo, {{ username }}!</h1>
+    {% include 'includes/erros.html' with form_obj=form %}
 
-      <!-- Formulário de nova postagem -->
-      <form method="POST" class="post-form" action="{% url 'postar' %}">
+    <button type="submit">Postar</button>
+  </form>
+
+  <!-- Listagem de postagens -->
+  {% for item in postagens_info %}
+    <div class="post">
+      <p><strong>{{ item.post.autor.username }}</strong>: {{ item.post.conteudo }}</p>
+      <small>{{ item.post.data_criacao }}</small>
+
+      <p>{{ item.total_curtidas }} curtida{{ item.total_curtidas|pluralize }}</p>
+
+      <!-- Botão Curtir/Descurtir -->
+      <form method="POST" action="{% url 'curtir' item.post.id %}">
         {% csrf_token %}
-        {{ form.conteudo }}
-
-        {% if form.errors %}
-          <ul class="form-erros">
-            {% for field, errors in form.errors.items %}
-              {% for error in errors %}
-                <li style="color: red;">{{ error }}</li>
-              {% endfor %}
-            {% endfor %}
-          </ul>
+        {% if item.curtido %}
+          <button type="submit">Descurtir</button>
+        {% else %}
+          <button type="submit">Curtir</button>
         {% endif %}
-
-        <button type="submit">Postar</button>
-
       </form>
 
-      <!-- Listagem de postagens -->
-      {% for item in postagens_info %}
-        <div class="post">
-          <p><strong>{{ item.post.autor.username }}</strong>: {{ item.post.conteudo }}</p>
-          <small>{{ item.post.data_criacao }}</small>
-
-          <p>{{ item.total_curtidas }} curtida{{ item.total_curtidas|pluralize }}</p>
-
-          <!-- Botão Curtir/Descurtir -->
-          <form method="POST" action="{% url 'curtir' item.post.id %}">
-            {% csrf_token %}
-            {% if item.curtido %}
-              <button type="submit">Descurtir</button>
-            {% else %}
-              <button type="submit">Curtir</button>
-            {% endif %}
-
-          </form>
-
-          <!-- Comentários da postagem -->
-          <div class="comentarios">
-            <h4>Comentários</h4>
-            {% for comentario in item.post.comentarios.all %}
-              <p>
-                <strong>{{ comentario.autor.username }}</strong>:
-                {{ comentario.texto }}
-                <br>
-                <small>{{ comentario.data_criacao }}</small>
-
-              </p>
-            {% empty %}
-              <p><em>Seja o primeiro a comentar!</em></p>
-            {% endfor %}
-
-          </div>
-
-          <!-- Formulário de novo comentário -->
-          <form method="POST" action="{% url 'comentar' %}">
-            {% csrf_token %}
-            {{ comentario_form.texto }}
-
-            {% if comentario_form.errors %}
-              <ul class="form-erros">
-                {% for field, errors in comentario_form.errors.items %}
-                  {% for error in errors %}
-                    <li style="color: red;">{{ error }}</li>
-                  {% endfor %}
-                {% endfor %}
-
-              </ul>
-            {% endif %}
-
-            <input type="hidden" name="post_id" value="{{ item.post.id }}">
-            <button type="submit">Comentar</button>
-
-          </form>
-
-        </div>
-
-      {% empty %}
-        <p>Você ainda não segue ninguém ou não há postagens.</p>
-      {% endfor %}
-
-      <!-- Botões adicionais -->
-      <div class="actions">
-        <form method="POST" action="{% url 'logoff' %}">
-          {% csrf_token %}
-          <button type="submit">Sair</button>
-
-        </form>
-
-        <form method="POST" action="{% url 'excluir_conta' %}">
-          {% csrf_token %}
-          <button type="submit">Excluir Conta</button>
-
-        </form>
-
+      <!-- Comentários da postagem -->
+      <div class="comentarios">
+        <h4>Comentários</h4>
+        {% for comentario in item.post.comentarios.all %}
+          <p>
+            <strong>{{ comentario.autor.username }}</strong>:
+            {{ comentario.texto }}
+            <br>
+            <small>{{ comentario.data_criacao }}</small>
+          </p>
+        {% empty %}
+          <p><em>Seja o primeiro a comentar!</em></p>
+        {% endfor %}
       </div>
 
+      <!-- Formulário de novo comentário -->
+      <form method="POST" action="{% url 'comentar' %}">
+        {% csrf_token %}
+        {{ comentario_form.texto }}
+
+        {% include 'includes/erros.html' with form_obj=comentario_form %}
+
+        <input type="hidden" name="post_id" value="{{ item.post.id }}">
+        <button type="submit">Comentar</button>
+      </form>
     </div>
+  {% empty %}
+    <p>Você ainda não segue ninguém ou não há postagens.</p>
+  {% endfor %}
 
-  </body>
+  <!-- Botões adicionais -->
+  <div class="actions">
+    <form method="POST" action="{% url 'logoff' %}">
+      {% csrf_token %}
+      <button type="submit">Sair</button>
+    </form>
 
-</html>
+    <form method="POST" action="{% url 'excluir_conta' %}">
+      {% csrf_token %}
+      <button type="submit">Excluir Conta</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/erros.js' %}"></script>
+{% endblock %}
