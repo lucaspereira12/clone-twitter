@@ -81,3 +81,19 @@ body {
 .opcoes .btn-cadastro:hover {
 	background-color: #1c7810;
 }
+
+.erros {
+  margin-top: 10px;
+}
+
+.mensagem-erro {
+  color: #ff3b30;
+  font-size: 0.9em;
+  margin: 5px 0;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}

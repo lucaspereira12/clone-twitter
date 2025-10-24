@@ -30,22 +30,7 @@
 
       </form>
 
-      <!-- Exibir erros do formulário -->
-      {% if form.errors %}
-        {% for field in form %}
-          {% for error in field.errors %}
-            <p style="color:red;">{{ error }}</p>
-
-          {% endfor %}
-
-        {% endfor %}
-
-        {% for error in form.non_field_errors %}
-          <li style="color:red;">{{ error }}</li>
-
-        {% endfor %}
-
-      {% endif %}
+      {% include 'includes/erros.html' with form_obj=form %}
 
       <hr>
 
@@ -54,6 +39,8 @@
       <a href="{% url 'home' %}" class="btn-login">Fazer login</a>
 
     </div>
+
+    <script src="{% static 'js/erros.js' %}"></script>
 
   </body>
 
