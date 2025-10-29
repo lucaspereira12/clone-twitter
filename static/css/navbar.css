@@ -1,0 +1,117 @@
+/* ---------- NAVBAR ---------- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffffcc;
+    border-bottom: 1px solid #e1e8ed;
+    box-shadow: 0 0 10px #e8e8e8;
+    padding: 10px 30px;
+    backdrop-filter: blur(10px);
+}
+
+body {
+    padding-top: 55px;
+}
+
+/* ---------- LADO ESQUERDO ---------- */
+.nav-left .logo {
+    height: 25px;
+    width: auto;
+}
+
+/* ---------- LADO DIREITO ---------- */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feed-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #14171a;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.feed-link img {
+    height: 22px;
+    width: 22px;
+}
+
+.feed-link:hover {
+    color: #1d9bf0;
+}
+
+/* ---------- MENU ---------- */
+.menu-container {
+    position: relative;
+}
+
+.menu-icon {
+    height: 26px;
+    width: 26px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.menu-icon:hover {
+    transform: scale(1.1);
+}
+
+/* ---------- LISTA DO MENU (DROPDOWN) ---------- */
+.menu-list {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 35px;
+    background-color: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    list-style: none;
+    width: 190px;
+    overflow: hidden;
+}
+
+.menu-list li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-list li:last-child {
+    border-bottom: none;
+}
+
+.menu-list a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    color: #14171a;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.menu-list a:hover {
+    background-color: #f5f8fa;
+    color: #1d9bf0;
+}
+
+.menu-list img {
+    height: 20px;
+    width: 20px;
+}
+
+/* Mostrar o menu quando ativo */
+.menu-container.active .menu-list {
+    display: flex;
+}

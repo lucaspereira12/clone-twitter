@@ -1,0 +1,19 @@
+{% comment %} includes/erros_senha.html {% endcomment %}
+
+{% if form_obj.non_field_errors %}
+  <ul class="mensagens">
+    {% for erro in form_obj.non_field_errors %}
+      <li>{{ erro }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% for field in form_obj %}
+  {% if field.errors %}
+    <ul class="mensagens">
+      {% for erro in field.errors %}
+        <li>{{ erro }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endfor %}

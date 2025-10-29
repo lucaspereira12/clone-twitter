@@ -1,35 +1,53 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Buscar Usuários</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/feed.css' %}">
-</head>
-<body>
-    <h1>Buscar Usuários</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    <form method="get" action="{% url 'buscar_usuarios' %}">
-        <input type="text" name="q" placeholder="Digite um nome ou @username" value="{{ termo }}">
-        <button type="submit">Buscar</button>
-    </form>
+{% block title %}Buscar Usuários{% endblock %}
 
-    <hr>
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/buscar_usuarios.css' %}">
+{% endblock %}
 
+{% block content %}
+<div class="buscar-container">
+  <h1>Buscar Usuários</h1>
+
+  <!-- Campo de busca (sem botão) -->
+  <form method="get" action="{% url 'buscar_usuarios' %}" id="form-busca">
+    <input type="text" name="q" id="campo-busca" placeholder="Digite um nome ou @username" value="{{ termo }}">
+
+  </form>
+
+  <div id="resultados">
     {% if usuarios %}
-        <ul>
-            {% for usuario in usuarios %}
-                <li>
-                    <a href="{% url 'perfil' username=usuario.username %}">
-                        @{{ usuario.username }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum usuário encontrado.</p>
+      <ul>
+        {% for usuario in usuarios %}
+          <li>
+            <a href="{% url 'perfil' username=usuario.username %}">
+              {% if usuario.profile.imagem %}
+                <img src="{{ usuario.profile.imagem.url }}" alt="Foto de {{ usuario.username }}">
+              {% else %}
+                <img src="{% static 'img/default-profile.png' %}" alt="Foto padrão">
+              {% endif %}
+
+              <div class="info">
+                <strong>{{ usuario.first_name }}</strong>
+                <span>@{{ usuario.username }}</span>
+
+              </div>
+
+            </a>
+
+          </li>
+        {% endfor %}
+
+      </ul>
     {% endif %}
 
-    <a href="{% url 'feed' %}">Voltar ao feed</a>
-</body>
-</html>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/buscar_usuarios.js' %}"></script>
+{% endblock %}

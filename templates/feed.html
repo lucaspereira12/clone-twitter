@@ -1,95 +1,131 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Twitter – Feed{% endblock %}
+{% block title %}Feed{% endblock %}
 
 {% block extra_css %}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="icon" href="{% static 'img/twitter.png' %}" type="image/png">
   <link rel="stylesheet" href="{% static 'css/feed.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="container">
+  <h1>Feed</h1>
 
-  <h1>Bem-vindo, {{ username }}!</h1>
+  <h2>Bem-vindo(a), @{{ username }}!</h2>
 
   <!-- Formulário de nova postagem -->
   <form method="POST" class="post-form" action="{% url 'postar' %}">
     {% csrf_token %}
     {{ form.conteudo }}
-
+    <div id="contador-caracteres">0 / 280</div>
     {% include 'includes/erros.html' with form_obj=form %}
-
     <button type="submit">Postar</button>
+
   </form>
 
   <!-- Listagem de postagens -->
   {% for item in postagens_info %}
     <div class="post">
-      <p><strong>{{ item.post.autor.username }}</strong>: {{ item.post.conteudo }}</p>
-      <small>{{ item.post.data_criacao }}</small>
-
-      <p>{{ item.total_curtidas }} curtida{{ item.total_curtidas|pluralize }}</p>
-
-      <!-- Botão Curtir/Descurtir -->
-      <form method="POST" action="{% url 'curtir' item.post.id %}">
-        {% csrf_token %}
-        {% if item.curtido %}
-          <button type="submit">Descurtir</button>
+      <div class="post-header">
+        {% if item.post.autor.profile.imagem %}
+          <img class="post-avatar" src="{{ item.post.autor.profile.imagem.url }}" alt="Foto de {{ item.post.autor.username }}">
         {% else %}
-          <button type="submit">Curtir</button>
+          <img class="post-avatar" src="{% static 'img/default-profile.png' %}" alt="Foto padrão">
         {% endif %}
-      </form>
 
-      <!-- Comentários da postagem -->
-      <div class="comentarios">
-        <h4>Comentários</h4>
-        {% for comentario in item.post.comentarios.all %}
-          <p>
-            <strong>{{ comentario.autor.username }}</strong>:
-            {{ comentario.texto }}
-            <br>
-            <small>{{ comentario.data_criacao }}</small>
-          </p>
-        {% empty %}
-          <p><em>Seja o primeiro a comentar!</em></p>
-        {% endfor %}
+        <div class="post-info">
+          <div class="post-info-header">
+            <span class="post-name">{{ item.post.autor.first_name }}</span>
+            <span class="post-username">@{{ item.post.autor.username }}</span>
+            <span class="post-date">· {{ item.post.data_criacao|date:"d M Y H:i" }}</span>
+
+          </div>
+
+          <div class="post-content">
+            <p>{{ item.post.conteudo }}</p>
+
+          </div>
+
+          <div class="post-actions">
+            <form method="POST" action="{% url 'curtir' item.post.id %}">
+              {% csrf_token %}
+              {% if item.curtido %}
+                <button type="submit" class="btn-like active">❤️ {{ item.total_curtidas }}</button>
+              {% else %}
+                <button type="submit" class="btn-like">♡ {{ item.total_curtidas }}</button>
+              {% endif %}
+
+            </form>
+
+            <button type="button" class="btn-comments" onclick="toggleComments({{ item.post.id }})">
+              💬 Comentários
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <!-- Formulário de novo comentário -->
-      <form method="POST" action="{% url 'comentar' %}">
-        {% csrf_token %}
-        {{ comentario_form.texto }}
+      <!-- Comentários -->
+      <div class="comentarios-container" id="comentarios-{{ item.post.id }}" style="display: none;">
+        <div class="comentarios">
+          {% for comentario in item.post.comentarios.all %}
+            <div class="comentario">
+              {% if comentario.autor.profile.imagem %}
+                <img class="comentario-avatar" src="{{ comentario.autor.profile.imagem.url }}" alt="Foto de {{ comentario.autor.username }}">
+              {% else %}
+                <img class="comentario-avatar" src="{% static 'img/default-profile.png' %}" alt="Foto padrão">
+              {% endif %}
+              <div class="comentario-info">
+                <div class="comentario-header">
+                  <strong>{{ comentario.autor.first_name }}</strong>
+                  <span class="comentario-username">@{{ comentario.autor.username }}</span>
+                  <span class="comentario-date">· {{ comentario.data_criacao|date:"d M Y H:i" }}</span>
 
-        {% include 'includes/erros.html' with form_obj=comentario_form %}
+                </div>
 
-        <input type="hidden" name="post_id" value="{{ item.post.id }}">
-        <button type="submit">Comentar</button>
-      </form>
+                <p>{{ comentario.texto }}</p>
+
+              </div>
+
+            </div>
+
+          {% empty %}
+            <p><em>Seja o primeiro a comentar!</em></p>
+          {% endfor %}
+
+        </div>
+
+        <!-- Novo comentário -->
+        <form method="POST" action="{% url 'comentar' %}">
+          {% csrf_token %}
+          {{ comentario_form.texto }}
+          <div class="contador-comentario">0 / 280</div>
+          {% include 'includes/erros.html' with form_obj=comentario_form %}
+          <input type="hidden" name="post_id" value="{{ item.post.id }}">
+          <button type="submit">Comentar</button>
+
+        </form>
+
+      </div>
+
     </div>
   {% empty %}
-    <p>Você ainda não segue ninguém ou não há postagens.</p>
+    <p>Não existe nenhuma postagem.</p>
   {% endfor %}
-
-  <!-- Botões adicionais -->
-  <div class="actions">
-    <form method="POST" action="{% url 'logoff' %}">
-      {% csrf_token %}
-      <button type="submit">Sair</button>
-    </form>
-
-    <form method="POST" action="{% url 'excluir_conta' %}">
-      {% csrf_token %}
-      <button type="submit">Excluir Conta</button>
-    </form>
-  </div>
 
 </div>
 {% endblock %}
 
 {% block extra_js %}
   <script src="{% static 'js/erros.js' %}"></script>
+  <script src="{% static 'js/contador.js' %}"></script>
+  <script>
+    function toggleComments(postId) {
+      const section = document.getElementById(`comentarios-${postId}`);
+      section.style.display = (section.style.display === "none" || section.style.display === "")
+        ? "block" : "none";
+    }
+  </script>
 {% endblock %}

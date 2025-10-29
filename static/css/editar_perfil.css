@@ -1,0 +1,270 @@
+/* ------------------------------
+   Layout principal
+------------------------------ */
+.editar-container {
+    max-width: 650px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 35px 40px;
+    box-shadow: 0 0 10px #d1d1d1;
+}
+
+.titulo-pagina {
+    font-size: 1.8rem;
+    color: #14171a;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f1f1f1;
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+/* ------------------------------
+   Seções
+------------------------------ */
+.secao {
+    margin-bottom: 30px;
+}
+
+.secao h2 {
+    font-size: 14pt;
+    color: #000;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* ------------------------------
+   Mensagens de feedback
+------------------------------ */
+.mensagens {
+    list-style: none;
+    padding: 12px 18px;
+    background-color: #f0f8ff;
+    border: 1px solid #cce5ff;
+    border-radius: 8px;
+    color: #084298;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* ------------------------------
+   Campos de formulário
+------------------------------ */
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    font-size: 10.5pt;
+    font-weight: 500;
+    color: #1c1c1c;
+    margin-bottom: 4px;
+}
+
+.campo input[type="text"],
+.campo input[type="file"],
+.campo input[type="password"] {
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 11.5pt;
+    color: #4f4f4f;
+    outline-color: #0b57d9;
+}
+
+/* ------------------------------
+   Imagem de perfil
+------------------------------ */
+.imagem-atual img {
+    display: block;
+    margin: 0 auto 10px auto;
+    width: 250px;
+    height: auto;
+}
+
+.campo .custom-file-input {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 15px;
+}
+
+.campo input[type="checkbox"] {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+/* ------------------------------
+   Campos do formulário de senha
+------------------------------ */
+.form-senha p {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-senha label {
+    font-weight: 500;
+    color: #1c1c1c;
+    margin-bottom: 6px;
+    font-size: 10.5pt;
+    display: flex;
+}
+
+.form-senha input[type="password"],
+.form-senha input[type="text"] {
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 11.5pt;
+    color: #4f4f4f;
+    outline-color: #0b57d9;
+}
+
+/* ------------------------------
+   Botões
+------------------------------ */
+.btn {
+    display: inline-block;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 15pt;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+}
+
+.btn-primario {
+    background-color: #1069f9;
+}
+
+.btn-primario:hover {
+    background-color: #0e64b4;
+}
+
+.btn-secundario {
+    background-color: #1c800f;
+}
+
+.btn-secundario:hover {
+    background-color: #1c7810;
+}
+
+.btn-alerta {
+    background-color: #dc3545;
+}
+
+.btn-alerta:hover {
+    background-color: #c82333;
+}
+
+.botoes {
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* ------------------------------
+   Linha divisória
+------------------------------ */
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 35px 0;
+}
+
+/* ------------------------------
+   Modal de exclusão
+------------------------------ */
+.modal-excluir {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.modal-excluir.ativo {
+  display: flex;
+}
+
+.modal-conteudo {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px 35px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    animation: aparecer 0.25s ease-in-out;
+}
+
+@keyframes aparecer {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-conteudo h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.texto-confirmacao {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.modal-conteudo input[type="password"] {
+    width: 100%;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+.modal-conteudo input[type="password"]::placeholder {
+    color: #d4adb1;
+}
+
+.modal-conteudo input[type="password"]:focus::placeholder {
+    color: #d9b7ba;
+}
+
+.botoes-modal {
+    display: flex;
+    justify-content: center;
+}
+
+.botoes-modal .btn {
+    font-size: 0.95rem;
+    padding: 10px 20px;
+}
+
+.fechar-modal {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: #888;
+    cursor: pointer;
+}
+
+.fechar-modal:hover {
+    color: #333;
+}
+
+.erro-senha {
+    color: #d00;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}

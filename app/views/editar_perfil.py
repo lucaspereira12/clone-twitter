@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordChangeForm
+from app.forms import CustomPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
 from app.forms import EditarPerfilForm
@@ -15,13 +15,15 @@ def editar_perfil_view(request):
     usuario_form = EditarPerfilForm(
         request.POST or None,
         request.FILES or None,
-        instance=profile  # agora é o Profile
+        instance=profile
     )
-    senha_form = PasswordChangeForm(user, request.POST or None)
+    senha_form = CustomPasswordChangeForm(user=request.user)
 
     if request.method == "POST":
         # Alterar senha
         if 'old_password' in request.POST:
+            senha_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+
             if senha_form.is_valid():
                 user = senha_form.save()
                 update_session_auth_hash(request, user)

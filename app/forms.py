@@ -4,17 +4,26 @@ from django.contrib.auth.models import User
 from .models import Post, Comentario, Profile
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
+from app.models import Post
+from django.forms.widgets import ClearableFileInput
 
 # =======================
 # Formulário de Postagem
 # =======================
 class PostForm(forms.ModelForm):
     conteudo = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'placeholder': 'O que está acontecendo?'
-        }),
-        label=''
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'O que está acontecendo?',
+                'rows': 3,
+                'maxlength': 280,
+                'id': 'post-conteudo',
+            }
+        ),
+        max_length=280,
+        error_messages={
+            'max_length': 'O post deve ter no máximo 280 caracteres.'
+        }
     )
 
     class Meta:
@@ -26,13 +35,18 @@ class PostForm(forms.ModelForm):
 # ========================
 class ComentarioForm(forms.ModelForm):
     texto = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'rows': 1,
-            'placeholder': 'Comente algo...',
-            'class': 'form-control',
-        }),
-        label='',
-        max_length=280
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Escreva um comentário...',
+                'rows': 2,
+                'maxlength': 280,
+                'class': 'comentario-textarea',
+            }
+        ),
+        max_length=280,
+        error_messages={
+            'max_length': 'O comentário deve ter no máximo 280 caracteres.'
+        }
     )
 
     class Meta:
@@ -87,7 +101,10 @@ class EditarPerfilForm(forms.ModelForm):
     # Campos do modelo User
     first_name = forms.CharField(label='Nome', required=False)
     last_name = forms.CharField(label='Sobrenome', required=False)
-    email = forms.EmailField(label='E-mail', required=False)
+    imagem = forms.ImageField(
+        required=False,
+        widget=ClearableFileInput(attrs={'class': 'custom-file-input'})
+    )
 
     class Meta:
         model = Profile
@@ -110,7 +127,6 @@ class EditarPerfilForm(forms.ModelForm):
         if self.user_instance:
             self.fields['first_name'].initial = self.user_instance.first_name
             self.fields['last_name'].initial = self.user_instance.last_name
-            self.fields['email'].initial = self.user_instance.email
 
         # Garante que o campo imagem tenha o valor inicial (para mostrar o checkbox "Limpar")
         if self.profile_instance and self.profile_instance.imagem:
@@ -124,7 +140,6 @@ class EditarPerfilForm(forms.ModelForm):
         if user:
             user.first_name = self.cleaned_data.get('first_name')
             user.last_name = self.cleaned_data.get('last_name')
-            user.email = self.cleaned_data.get('email')
             user.save()
 
         # Atualiza ou limpa a imagem
@@ -140,3 +155,18 @@ class EditarPerfilForm(forms.ModelForm):
             profile.save()
 
         return profile
+
+# =============================================
+# Formulário de alteração de senha sem autofocus
+# =============================================
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].help_text = ''
+        
+        # Desativa autofocus e autocomplete nos campos de senha
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'autocomplete': 'off',
+                'autofocus': False
+            })
