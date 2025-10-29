@@ -1,9 +1,53 @@
-<nav class="navbar">
-  <ul>
-    <li><a href="{% url 'feed' %}">Feed</a></li>
-    <li><a href="{% url 'perfil' request.user.username %}">Meu Perfil</a></li>
-    <li><a href="{% url 'logoff' %}">Sair</a></li>
+{% load static %}
 
-  </ul>
+<nav class="navbar">
+  <!-- LOGO -->
+  <div class="nav-left">
+    <img src="{% static 'img/twitter-logo.png' %}" alt="Twitter logo" class="logo">
+
+  </div>
+
+  <!-- LINKS À DIREITA -->
+  <div class="nav-right">
+    <a href="{% url 'feed' %}" class="feed-link">
+      <img src="{% static 'img/feed.png' %}" alt="Feed">
+      <span>Feed</span>
+
+    </a>
+
+    <!-- MENU DROPDOWN -->
+    <div class="menu-container">
+      <img src="{% static 'img/menu.png' %}" alt="Menu" class="menu-icon" id="menu-toggle">
+
+      <ul class="menu-list" id="menu-list">
+        <li>
+          <a href="{% url 'perfil' request.user.username %}">
+            <img src="{% static 'img/perfil.png' %}" alt="Perfil">Meu Perfil
+
+          </a>
+
+        </li>
+
+        <li>
+          <a href="{% url 'buscar_usuarios' %}">
+            <img src="{% static 'img/pesquisar.png' %}" alt="Pesquisar">Buscar Usuários
+
+          </a>
+
+        </li>
+
+        <li>
+          <a href="{% url 'logoff' %}">
+            <img src="{% static 'img/sair.png' %}" alt="Sair">Sair
+
+          </a>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
 
 </nav>

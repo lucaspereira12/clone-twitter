@@ -3,8 +3,13 @@
 
 {% block title %}Editar Perfil{% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/editar_perfil.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h1>Editar Perfil</h1>
+<div class="editar-container">
+  <h1 class="titulo-pagina">Editar Perfil</h1>
 
   {% if messages %}
     <ul class="mensagens">
@@ -14,40 +19,180 @@
     </ul>
   {% endif %}
 
-  <form method="post" enctype="multipart/form-data">
+  <!-- Formulário principal -->
+  <form method="post" enctype="multipart/form-data" class="form-editar">
     {% csrf_token %}
 
-    <h2>Informações Pessoais</h2>
-    {{ usuario_form.first_name.errors }}
-    {{ usuario_form.first_name.label_tag }} {{ usuario_form.first_name }}
+    <section class="secao">
+      <h2>Nome Pessoal</h2>
 
-    {{ usuario_form.last_name.errors }}
-    {{ usuario_form.last_name.label_tag }} {{ usuario_form.last_name }}
-
-    {{ usuario_form.email.errors }}
-    {{ usuario_form.email.label_tag }} {{ usuario_form.email }}
-
-    <h2>Imagem de Perfil</h2>
-    {% if request.user.profile.imagem %}
-      <div style="margin-bottom:10px;">
-        <img src="{{ request.user.profile.imagem.url }}" alt="Imagem atual"
-             width="150" style="border-radius:50%;border:2px solid #ddd;">
+      <div class="campo">
+        {{ usuario_form.first_name.label_tag }}
+        {{ usuario_form.first_name }}
+        {{ usuario_form.first_name.errors }}
       </div>
-    {% endif %}
-    {{ usuario_form.imagem.errors }}
-    {{ usuario_form.imagem }}
 
-    <br><br>
-    <button type="submit">Salvar Alterações</button>
+      <div class="campo">
+        {{ usuario_form.last_name.label_tag }}
+        {{ usuario_form.last_name }}
+        {{ usuario_form.last_name.errors }}
+      </div>
+    </section>
+
+    <section class="secao">
+      <h2>Imagem de Perfil</h2>
+
+      {% if request.user.profile.imagem %}
+        <div class="imagem-atual">
+          <img src="{{ request.user.profile.imagem.url }}" alt="Imagem atual">
+        </div>
+      {% endif %}
+
+      <div class="campo imagem-campo">
+        <!-- Input de arquivo -->
+        <input type="file" name="imagem" class="custom-file-input">
+
+        <!-- Checkbox de limpar imagem -->
+        {% if request.user.profile.imagem %}
+          <label class="checkbox-limpar">
+            <input type="checkbox" name="imagem-clear"> Remover Imagem
+          </label>
+        {% endif %}
+      </div>
+    </section>
+
+    <div class="botoes">
+      <button type="submit" class="btn btn-primario">Salvar Alterações</button>
+    </div>
   </form>
 
   <hr>
 
-  <h2>Alterar Senha</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ senha_form.as_p }}
-    <button type="submit">Atualizar Senha</button>
-  </form>
+  <!-- Alterar senha -->
+  <section class="secao">
+    <h2>Alterar Senha</h2>
+    <form method="post" class="form-senha">
+      {% csrf_token %}
 
+      <!-- Mensagens de erro do formulário de senha -->
+      {% include 'includes/erros_senha.html' with form_obj=senha_form %}
+
+      <!-- Campos do formulário -->
+      <div class="campo">
+        {{ senha_form.old_password.label_tag }}
+        {{ senha_form.old_password }}
+      </div>
+
+      <div class="campo">
+        {{ senha_form.new_password1.label_tag }}
+        {{ senha_form.new_password1 }}
+      </div>
+
+      <div class="campo">
+        {{ senha_form.new_password2.label_tag }}
+        {{ senha_form.new_password2 }}
+      </div>
+
+      <div class="botoes">
+        <button type="submit" class="btn btn-secundario">Atualizar Senha</button>
+      </div>
+    </form>
+  </section>
+
+  <hr>
+
+  <!-- Excluir conta -->
+  <section class="secao">
+    <h2>Excluir Conta</h2>
+
+    <form method="POST" action="{% url 'excluir_conta' %}" class="form-excluir">
+      {% csrf_token %}
+      <div class="botoes">
+        <button type="button" id="abrir-modal-excluir" class="btn btn-alerta">Excluir Conta</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Modal de confirmação -->
+  <div id="modal-excluir" class="modal-excluir">
+    <div class="modal-conteudo">
+      <button type="button" class="fechar-modal">&times;</button>
+      <h3>Tem certeza que deseja excluir sua conta?</h3>
+
+      <p class="texto-confirmacao">Essa ação não pode ser desfeita. Digite sua senha para confirmar:</p>
+
+      <input type="password" id="senha_confirmacao" placeholder="Digite sua senha">
+
+      <div class="botoes-modal">
+        <button id="confirmar-exclusao" class="btn btn-alerta">Excluir</button>
+      </div>
+
+      <p id="erro-senha" class="erro-senha"></p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("modal-excluir");
+  const abrirModalBtn = document.getElementById("abrir-modal-excluir");
+  const fecharModalBtn = document.querySelector(".fechar-modal");
+  const confirmarBtn = document.getElementById("confirmar-exclusao");
+  const senhaInput = document.getElementById("senha_confirmacao");
+  const erroSenha = document.getElementById("erro-senha");
+
+  // Abrir modal
+  abrirModalBtn.addEventListener("click", () => {
+    modal.classList.add("ativo");
+    senhaInput.focus();
+  });
+
+  // Fechar modal apenas no X
+  fecharModalBtn.addEventListener("click", () => {
+    modal.classList.remove("ativo");
+    senhaInput.value = ""; // limpa o campo
+    erroSenha.textContent = "";
+  });
+
+  // NÃO fecha clicando fora do modal — apenas no X
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      e.stopPropagation();
+    }
+  });
+
+  // Enviar requisição AJAX de exclusão
+  confirmarBtn.addEventListener("click", () => {
+    const senha = senhaInput.value.trim();
+
+    if (!senha) {
+      erroSenha.textContent = "Por favor, digite sua senha.";
+      return;
+    }
+
+    fetch("{% url 'excluir_conta' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ senha_confirmacao: senha }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "erro") {
+          erroSenha.textContent = data.mensagem;
+        } else if (data.status === "sucesso") {
+          window.location.href = data.redirect;
+        }
+      })
+      .catch(() => {
+        erroSenha.textContent = "Ocorreu um erro. Tente novamente.";
+      });
+  });
+});
+</script>
 {% endblock %}
