@@ -19,15 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from app.api.views import criar_comentario_api, listar_posts_api
-from app.api.views import home
 
 urlpatterns = [
-    path('', home, name='home'),
     path("admin/", admin.site.urls),
-    path("api/", include("app.urls")),
-    path('api/posts/<int:post_id>/comentarios/', criar_comentario_api, name='criar_comentario_api'),
-    path('api/posts/', listar_posts_api, name='listar_posts_api'),
+    path('', include('app.urls')),
 ]
 
 # Servir arquivos de mídia durante o desenvolvimento
