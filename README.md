@@ -38,3 +38,7 @@ pip >= 22.0
    python manage.py migrate
    python manage.py runserver
    ```
+
+ ## Link do deploy
+
+https://lucaspereira12.pythonanywhere.com/
